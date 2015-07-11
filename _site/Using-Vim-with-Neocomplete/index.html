@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="author" content="liu_winter" />
+		<title>Using Vim with Neocomplete on Ubuntu 14.04</title>
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link href="/feed/" rel="alternate" title="liu_winter" type="application/atom+xml" />
+		<link rel="stylesheet" href="/media/css/style.css" />
+		<link rel="stylesheet" href="/media/css/highlight.css" />
+		<script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="main" role="main">
+				<header>
+				<h1>Using Vim with Neocomplete on Ubuntu 14.04</h1>
+				</header>
+				<nav>
+				<span><a title="网站首页" class="" href="/">首页</a></span>
+				<span><a title="文章分类" class="" href="/categories/">分类</a></span>
+				<span><a title="标签索引" class="" href="/tags/">标签</a></span>
+				<!--<span><a title="友情链接" class="" href="/links/">链接</a></span>-->
+				<span><a title="留言交流" class="" href="/guestbook/">留言</a></span>
+                                <span><a title="订阅本站" class="" href="/feed.xml">订阅</a></span>
+				<span><a title="关于站长" class="" href="/about/">关于</a></span>
+				</nav>
+				<article class="content">
+				<section class="meta">
+<span class="time">
+  <time datetime="2015-07-09">2015-07-09</time>
+</span>
+
+ | 
+<span class="categories">
+  分类
+  
+  <a href="/categories/#linux" title="linux">linux</a>&nbsp;
+  
+</span>
+
+
+ | 
+<span class="tags">
+  标签
+  
+  <a href="/tags/#linux" title="linux">linux</a>&nbsp;
+  
+  <a href="/tags/#vim" title="vim">vim</a>&nbsp;
+  
+  <a href="/tags/#ubuntu" title="ubuntu">ubuntu</a>&nbsp;
+  
+</span>
+
+</section>
+<section class="post">
+<p><a href="https://github.com/Shougo/neocomplete.vim">Neocomplete</a> is a auto completion plugin for vim. However, it requires <a href="http://www.lua.org">lua</a>, which is not supported by vim default. You can easily install Vim by opening "Ubuntu Software Center", then search for <code>Gvim</code>, then click install. Here is a guide to compile Vim with <code>lua</code> support from source. It was originally written by <a href="https://github.com/Valloric/">Valloric</a>, the author of <a href="https://github.com/Valloric/YouCompleteMe">YouCompleteMe</a>. The reason why I don't use <code>YouCompleteMe</code> is that I have never built it successfully :-(</p>
+
+<ol>
+<li><p>Install prerequisite libraries:</p>
+
+<pre><code class="`sh"> sudo apt-get install libncurses5-dev libgnome2-dev libgnomeui-dev \
+     libgtk2.0-dev libatk1.0-dev libbonoboui2-dev \
+     libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
+     ruby-dev mercurial
+</code></pre></li>
+<li><p>Remove original Vim:</p>
+
+<pre><code class="`sh"> sudo apt-get remove vim vim-runtime gvim
+</code></pre></li>
+<li><p>Install lua:</p>
+
+<pre><code class="`sh"> sudo apt-get install liblua5.2-dev lua5.2
+</code></pre></li>
+<li><p>Compile Vim74 from source:</p>
+
+<pre><code class="`sh"> wget ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2
+ tar xvf vim-7.4.tar.bz2
+ cd vim74
+ ./configure --with-features=huge \
+         --enable-multibyte \
+         --enable-rubyinterp \
+         --enable-pythoninterp \
+         --with-python-config-dir=/usr/lib/python2.7/config \
+         --enable-perlinterp \
+         --enable-luainterp \
+         --enable-gui=gtk2 --enable-cscope --prefix=/usr
+</code></pre>
+
+<p> set Vim RUNTIMEDIR:
+ <code>sh
+ make VIMRUNTIMEDIR=/usr/share/vim/vim74
+</code>
+ Finish install using <code>sudo make install</code>.
+ To make it easier when uninstall, use <code>sudo checkinstall</code> instead.</p></li>
+<li><p>Set Vim as default editor:</p>
+
+<pre><code class="`sh"> sudo update-alternatives --install /usr/bin/editor editor /usr/bin/vim 1
+ sudo update-alternatives --set editor /usr/bin/vim
+ sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
+ sudo update-alternatives --set vi /usr/bin/vim
+</code></pre></li>
+<li><p>Check install by typing <code>vim --version</code> in shell or <code>:echo has("lua")</code> in vim.</p></li>
+</ol>
+
+
+<p>Here are some common settings:</p>
+
+<pre><code class="vim">nmap &lt;F3&gt; :NeoCompleteToggle&lt;CR&gt;                    "toggle plugin using F3
+let g:neocomplete#enable_at_startup = 1             "start automatically
+let g:neocomplete#disable_auto_complete = 0         "auto completion
+let g:neocomplete#auto_completion_start_length = 3  "do completion after input 3 key
+</code></pre>
+
+<p>More info can be found by <code>:help neocomplete</code>.</p>
+
+<p>Ref: <a href="https://github.com/Valloric/YouCompleteMe/wiki/Building-Vim-from-source">Building Vim from source</a></p>
+
+</section>
+<section align="right">
+<br/>
+<span>
+	<a   class="pageNavInvalid"  >上一篇</a>
+	&nbsp;&nbsp;&nbsp;
+	<a   class="pageNavInvalid"  >下一篇</a>
+</span>
+</section>
+
+	
+	<div class="ds-thread" />
+		
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"winter233"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+				</article>
+			</div>
+
+			<footer>
+			<p><small>
+				<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/cn/" target="_blank" title="许可协议">©</a> 2004 - 2015 <a href="/about/">liu_winter</a>
+			</small></p>
+			</footer>
+
+		</div>
+	</body>
+</html>
