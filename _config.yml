@@ -1,5 +1,14 @@
-baseurl: /winter233.github.io
-
+markdown: rdiscount
+permalink: /:title/
+url: http://winter233.github.io
+highlighter: pygments
+name: winter233
+description: 
 author: liu_winter
 email: liu_winter@outlook.com
-github: winter233
+duoshuo: winter233
+weibo: 1854262545
+hub: winter233
+safe: true
+paginate: 20
+about: Hello world!
