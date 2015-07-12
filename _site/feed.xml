@@ -1,88 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
         <channel>
-                <title>winter233</title>
+                <title>winter233's blog</title>
                 <description></description>
                 <link>http://winter233.github.io</link>
                 <atom:link href="http://winter233.github.io/feed.xml" rel="self" type="application/rss+xml" />
                 
                         <item>
                            <title>Using Vim with Neocomplete on Ubuntu 14.04</title>
-                           <description>&lt;p&gt;&lt;a href=&quot;https://github.com/Shougo/neocomplete.vim&quot;&gt;Neocomplete&lt;/a&gt; is a auto completion plugin for vim. However, it requires &lt;a href=&quot;http://www.lua.org&quot;&gt;lua&lt;/a&gt;, which is not supported by vim default. You can easily install Vim by opening &quot;Ubuntu Software Center&quot;, then search for &lt;code&gt;Gvim&lt;/code&gt;, then click install. Here is a guide to compile Vim with &lt;code&gt;lua&lt;/code&gt; support from source. It was originally written by &lt;a href=&quot;https://github.com/Valloric/&quot;&gt;Valloric&lt;/a&gt;, the author of &lt;a href=&quot;https://github.com/Valloric/YouCompleteMe&quot;&gt;YouCompleteMe&lt;/a&gt;. The reason why I don't use &lt;code&gt;YouCompleteMe&lt;/code&gt; is that I have never built it successfully :-(&lt;/p&gt;
+                           <description>&lt;p&gt;&lt;a href=&quot;https://github.com/Shougo/neocomplete.vim&quot;&gt;Neocomplete&lt;/a&gt; is an auto completion plugin for vim. However, it requires &lt;a href=&quot;http://www.lua.org&quot;&gt;lua&lt;/a&gt;, which is not supported by vim default. You can easily install Vim by opening &amp;quot;Ubuntu Software Center&amp;quot;, then search for &lt;code class=&quot;prettyprint&quot;&gt;Gvim&lt;/code&gt;, then click install. Here is a guide to compile Vim with &lt;code class=&quot;prettyprint&quot;&gt;lua&lt;/code&gt; support from source. It was originally written by &lt;a href=&quot;https://github.com/Valloric/&quot;&gt;Valloric&lt;/a&gt;, the author of &lt;a href=&quot;https://github.com/Valloric/YouCompleteMe&quot;&gt;YouCompleteMe&lt;/a&gt;. The reason why I don&amp;#39;t use &lt;code class=&quot;prettyprint&quot;&gt;YouCompleteMe&lt;/code&gt; is that I have never built it successfully :-( &lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;p&gt;Install prerequisite libraries:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;`sh&quot;&gt; sudo apt-get install libncurses5-dev libgnome2-dev libgnomeui-dev \
-     libgtk2.0-dev libatk1.0-dev libbonoboui2-dev \
-     libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
-     ruby-dev mercurial
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Remove original Vim:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;`sh&quot;&gt; sudo apt-get remove vim vim-runtime gvim
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Install prerequisite libraries:    &lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;sudo apt-get install libncurses5-dev libgnome2-dev libgnomeui-dev &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    libgtk2.0-dev libatk1.0-dev libbonoboui2-dev &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    ruby-dev mercurial
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Remove original Vim:     &lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;sudo apt-get remove vim vim-runtime gvim
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Install lua:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;`sh&quot;&gt; sudo apt-get install liblua5.2-dev lua5.2
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;sudo apt-get install liblua5.2-dev lua5.2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Compile Vim74 from source:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;`sh&quot;&gt; wget ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2
- tar xvf vim-7.4.tar.bz2
- cd vim74
- ./configure --with-features=huge \
-         --enable-multibyte \
-         --enable-rubyinterp \
-         --enable-pythoninterp \
-         --with-python-config-dir=/usr/lib/python2.7/config \
-         --enable-perlinterp \
-         --enable-luainterp \
-         --enable-gui=gtk2 --enable-cscope --prefix=/usr
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt; set Vim RUNTIMEDIR:
- &lt;code&gt;sh
- make VIMRUNTIMEDIR=/usr/share/vim/vim74
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;wget ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2
+tar xvf vim-7.4.tar.bz2
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;vim74
+./configure --with-features&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;huge &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --enable-multibyte &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --enable-rubyinterp &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --enable-pythoninterp &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --with-python-config-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/lib/python2.7/config &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --enable-perlinterp &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --enable-luainterp &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --enable-gui&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;gtk2 --enable-cscope --prefix&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;set Vim RUNTIMEDIR:
+&lt;code class=&quot;prettyprint&quot;&gt;sh
+make VIMRUNTIMEDIR=/usr/share/vim/vim74
 &lt;/code&gt;
- Finish install using &lt;code&gt;sudo make install&lt;/code&gt;.
- To make it easier when uninstall, use &lt;code&gt;sudo checkinstall&lt;/code&gt; instead.&lt;/p&gt;&lt;/li&gt;
+Finish install using &lt;code class=&quot;prettyprint&quot;&gt;sudo make install&lt;/code&gt;.
+To make it easier when uninstall, use &lt;code class=&quot;prettyprint&quot;&gt;sudo checkinstall&lt;/code&gt; instead.&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Set Vim as default editor:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;`sh&quot;&gt; sudo update-alternatives --install /usr/bin/editor editor /usr/bin/vim 1
- sudo update-alternatives --set editor /usr/bin/vim
- sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
- sudo update-alternatives --set vi /usr/bin/vim
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Check install by typing &lt;code&gt;vim --version&lt;/code&gt; in shell or &lt;code&gt;:echo has(&quot;lua&quot;)&lt;/code&gt; in vim.&lt;/p&gt;&lt;/li&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;sudo update-alternatives --install /usr/bin/editor editor /usr/bin/vim 1
+sudo update-alternatives --set editor /usr/bin/vim
+sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
+sudo update-alternatives --set vi /usr/bin/vim
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Check installation by typing &lt;code class=&quot;prettyprint&quot;&gt;vim --version&lt;/code&gt; in shell or &lt;code class=&quot;prettyprint&quot;&gt;:echo has(&amp;quot;lua&amp;quot;)&lt;/code&gt; in vim.&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-
 &lt;p&gt;Here are some common settings:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;vim&quot;&gt;nmap &amp;lt;F3&amp;gt; :NeoCompleteToggle&amp;lt;CR&amp;gt;                    &quot;toggle plugin using F3
-let g:neocomplete#enable_at_startup = 1             &quot;start automatically
-let g:neocomplete#disable_auto_complete = 0         &quot;auto completion
-let g:neocomplete#auto_completion_start_length = 3  &quot;do completion after input 3 key
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;More info can be found by &lt;code&gt;:help neocomplete&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;nmap &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;F3&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; :NeoCompleteToggle&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;CR&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;                    &lt;span class=&quot;c&quot;&gt;&amp;quot;toggle plugin using F3&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;:neocomplete#enable_at_startup &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;             &lt;span class=&quot;c&quot;&gt;&amp;quot;start automatically&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;:neocomplete#disable_auto_complete &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;         &lt;span class=&quot;c&quot;&gt;&amp;quot;auto completion&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;:neocomplete#auto_completion_start_length &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;&amp;quot;do completion after input 3 keys&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;More info can be found by &lt;code class=&quot;prettyprint&quot;&gt;:help neocomplete&lt;/code&gt;.   &lt;/p&gt;
 
 &lt;p&gt;Ref: &lt;a href=&quot;https://github.com/Valloric/YouCompleteMe/wiki/Building-Vim-from-source&quot;&gt;Building Vim from source&lt;/a&gt;&lt;/p&gt;
 </description>
-                           <pubDate>Thu, 09 Jul 2015 00:00:00 +0800</pubDate>
+                           <pubDate>Fri, 10 Jul 2015 00:00:00 +0800</pubDate>
                            <link>http://winter233.github.io/Using-Vim-with-Neocomplete/</link>
                            <guid isPermaLink="true">http://winter233.github.io/Using-Vim-with-Neocomplete/</guid>
-                           </item>
-                
-                        <item>
-                           <title>Hello Github</title>
-                           <description>&lt;p&gt;Hello, github!
-Hello, world!&lt;/p&gt;
-</description>
-                           <pubDate>Thu, 09 Jul 2015 00:00:00 +0800</pubDate>
-                           <link>http://winter233.github.io/Hello-github/</link>
-                           <guid isPermaLink="true">http://winter233.github.io/Hello-github/</guid>
                            </item>
                 
         </channel>

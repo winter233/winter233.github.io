@@ -28,7 +28,7 @@
 				<article class="content">
 				<section class="meta">
 <span class="time">
-  <time datetime="2015-07-09">2015-07-09</time>
+  <time datetime="2015-07-10">2015-07-10</time>
 </span>
 
  | 
@@ -54,65 +54,56 @@
 
 </section>
 <section class="post">
-<p><a href="https://github.com/Shougo/neocomplete.vim">Neocomplete</a> is a auto completion plugin for vim. However, it requires <a href="http://www.lua.org">lua</a>, which is not supported by vim default. You can easily install Vim by opening "Ubuntu Software Center", then search for <code>Gvim</code>, then click install. Here is a guide to compile Vim with <code>lua</code> support from source. It was originally written by <a href="https://github.com/Valloric/">Valloric</a>, the author of <a href="https://github.com/Valloric/YouCompleteMe">YouCompleteMe</a>. The reason why I don't use <code>YouCompleteMe</code> is that I have never built it successfully :-(</p>
+<p><a href="https://github.com/Shougo/neocomplete.vim">Neocomplete</a> is an auto completion plugin for vim. However, it requires <a href="http://www.lua.org">lua</a>, which is not supported by vim default. You can easily install Vim by opening &quot;Ubuntu Software Center&quot;, then search for <code class="prettyprint">Gvim</code>, then click install. Here is a guide to compile Vim with <code class="prettyprint">lua</code> support from source. It was originally written by <a href="https://github.com/Valloric/">Valloric</a>, the author of <a href="https://github.com/Valloric/YouCompleteMe">YouCompleteMe</a>. The reason why I don&#39;t use <code class="prettyprint">YouCompleteMe</code> is that I have never built it successfully :-( </p>
 
 <ol>
-<li><p>Install prerequisite libraries:</p>
-
-<pre><code class="`sh"> sudo apt-get install libncurses5-dev libgnome2-dev libgnomeui-dev \
-     libgtk2.0-dev libatk1.0-dev libbonoboui2-dev \
-     libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
-     ruby-dev mercurial
-</code></pre></li>
-<li><p>Remove original Vim:</p>
-
-<pre><code class="`sh"> sudo apt-get remove vim vim-runtime gvim
-</code></pre></li>
+<li><p>Install prerequisite libraries:    </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install libncurses5-dev libgnome2-dev libgnomeui-dev <span class="se">\</span>
+    libgtk2.0-dev libatk1.0-dev libbonoboui2-dev <span class="se">\</span>
+    libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev <span class="se">\</span>
+    ruby-dev mercurial
+</code></pre></div></li>
+<li><p>Remove original Vim:     </p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get remove vim vim-runtime gvim
+</code></pre></div></li>
 <li><p>Install lua:</p>
-
-<pre><code class="`sh"> sudo apt-get install liblua5.2-dev lua5.2
-</code></pre></li>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install liblua5.2-dev lua5.2
+</code></pre></div></li>
 <li><p>Compile Vim74 from source:</p>
-
-<pre><code class="`sh"> wget ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2
- tar xvf vim-7.4.tar.bz2
- cd vim74
- ./configure --with-features=huge \
-         --enable-multibyte \
-         --enable-rubyinterp \
-         --enable-pythoninterp \
-         --with-python-config-dir=/usr/lib/python2.7/config \
-         --enable-perlinterp \
-         --enable-luainterp \
-         --enable-gui=gtk2 --enable-cscope --prefix=/usr
-</code></pre>
-
-<p> set Vim RUNTIMEDIR:
- <code>sh
- make VIMRUNTIMEDIR=/usr/share/vim/vim74
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">wget ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2
+tar xvf vim-7.4.tar.bz2
+<span class="nb">cd </span>vim74
+./configure --with-features<span class="o">=</span>huge <span class="se">\</span>
+        --enable-multibyte <span class="se">\</span>
+        --enable-rubyinterp <span class="se">\</span>
+        --enable-pythoninterp <span class="se">\</span>
+        --with-python-config-dir<span class="o">=</span>/usr/lib/python2.7/config <span class="se">\</span>
+        --enable-perlinterp <span class="se">\</span>
+        --enable-luainterp <span class="se">\</span>
+        --enable-gui<span class="o">=</span>gtk2 --enable-cscope --prefix<span class="o">=</span>/usr
+</code></pre></div>
+<p>set Vim RUNTIMEDIR:
+<code class="prettyprint">sh
+make VIMRUNTIMEDIR=/usr/share/vim/vim74
 </code>
- Finish install using <code>sudo make install</code>.
- To make it easier when uninstall, use <code>sudo checkinstall</code> instead.</p></li>
+Finish install using <code class="prettyprint">sudo make install</code>.
+To make it easier when uninstall, use <code class="prettyprint">sudo checkinstall</code> instead.</p></li>
 <li><p>Set Vim as default editor:</p>
-
-<pre><code class="`sh"> sudo update-alternatives --install /usr/bin/editor editor /usr/bin/vim 1
- sudo update-alternatives --set editor /usr/bin/vim
- sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
- sudo update-alternatives --set vi /usr/bin/vim
-</code></pre></li>
-<li><p>Check install by typing <code>vim --version</code> in shell or <code>:echo has("lua")</code> in vim.</p></li>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo update-alternatives --install /usr/bin/editor editor /usr/bin/vim 1
+sudo update-alternatives --set editor /usr/bin/vim
+sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
+sudo update-alternatives --set vi /usr/bin/vim
+</code></pre></div></li>
+<li><p>Check installation by typing <code class="prettyprint">vim --version</code> in shell or <code class="prettyprint">:echo has(&quot;lua&quot;)</code> in vim.</p></li>
 </ol>
 
-
 <p>Here are some common settings:</p>
-
-<pre><code class="vim">nmap &lt;F3&gt; :NeoCompleteToggle&lt;CR&gt;                    "toggle plugin using F3
-let g:neocomplete#enable_at_startup = 1             "start automatically
-let g:neocomplete#disable_auto_complete = 0         "auto completion
-let g:neocomplete#auto_completion_start_length = 3  "do completion after input 3 key
-</code></pre>
-
-<p>More info can be found by <code>:help neocomplete</code>.</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim">nmap <span class="p">&lt;</span>F3<span class="p">&gt;</span> :NeoCompleteToggle<span class="p">&lt;</span>CR<span class="p">&gt;</span>                    <span class="c">&quot;toggle plugin using F3</span>
+<span class="k">let</span> <span class="k">g</span>:neocomplete#enable_at_startup <span class="p">=</span> <span class="m">1</span>             <span class="c">&quot;start automatically</span>
+<span class="k">let</span> <span class="k">g</span>:neocomplete#disable_auto_complete <span class="p">=</span> <span class="m">0</span>         <span class="c">&quot;auto completion</span>
+<span class="k">let</span> <span class="k">g</span>:neocomplete#auto_completion_start_length <span class="p">=</span> <span class="m">3</span>  <span class="c">&quot;do completion after input 3 keys</span>
+</code></pre></div>
+<p>More info can be found by <code class="prettyprint">:help neocomplete</code>.   </p>
 
 <p>Ref: <a href="https://github.com/Valloric/YouCompleteMe/wiki/Building-Vim-from-source">Building Vim from source</a></p>
 
@@ -120,7 +111,7 @@ let g:neocomplete#auto_completion_start_length = 3  "do completion after input 3
 <section align="right">
 <br/>
 <span>
-	<a  href="/Hello-github/" class="pageNav"  >上一篇</a>
+	<a   class="pageNavInvalid"  >上一篇</a>
 	&nbsp;&nbsp;&nbsp;
 	<a   class="pageNavInvalid"  >下一篇</a>
 </span>

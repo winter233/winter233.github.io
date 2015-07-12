@@ -1,8 +1,12 @@
-markdown: rdiscount
+#markdown: rdiscount
+markdown: kramdown
+markdown: redcarpet
+redcarpet:
+    extensions: [ "fenced_code_blocks", "no_intra_emphasis", "strikethrough", "highlight", "prettify", "tables", "autolink" ]
 permalink: /:title/
 url: http://winter233.github.io
 highlighter: pygments
-name: winter233
+name: winter233's blog
 description: 
 author: liu_winter
 email: liu_winter@outlook.com

@@ -5,6 +5,5 @@ comments: yes
 thread: 616
 ---
 
+![minions welcome](/image/minions_welcome.jpg)
 
-
-欢迎您的到来~~~
