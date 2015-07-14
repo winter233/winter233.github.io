@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Using Vim with Neocomplete on Ubuntu 14.04
-categories: linux
+categories: vim
 tags: [linux,vim,ubuntu]
 ---
 

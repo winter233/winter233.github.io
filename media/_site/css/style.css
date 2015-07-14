@@ -25,9 +25,10 @@ a{color:#dd0000;text-decoration:none;}
 a:hover{color:#333333;text-decoration:underline;}
 hr{margin:.7em 0;border-top:1px dashed #d0d0d0;border-bottom:1px dashed #f9f9f9;}
 p{padding:.5em 0;margin:.5em 0;}
+/*li{padding: .2em 2em;}*/
 li{padding: .2em 0; }
-ol{list-style-position:inside;border: rgb(226, 222, 222);border-style: solid;border-width:1px;border-radius: 10px;padding: .3em 0;}
-ul{list-style-position:inside;border: rgb(226, 222, 222);border-style: solid;border-width:1px;border-radius: 10px;padding: .3em 0;}
+/*ol{list-style-position:inside;border: rgb(226, 222, 222);border-style: solid;border-width:1px;border-radius: 10px;padding: .3em 0;}*/
+/*ul{list-style-position:inside;border: rgb(226, 222, 222);border-style: solid;border-width:1px;border-radius: 10px;padding: .3em 0;}*/
 /*ol, ul {*/
   /*list-style-position: inside; }*/
 ol, ul {
@@ -35,15 +36,19 @@ ol, ul {
 }
 ol {
     list-style-type: decimal;
-    padding-left: 36px;
+    padding-left: 12px;
 }
 p, ul, ol, dl {
     line-height: 24px;
     margin: 0 0 24px 0;
 }
-li ol{border-style:none;}
-li ul{border-style:none;}
-ol ul, ul ol, ul ul, ol ol {margin-left:1em;}
+ol {
+    list-style-type: decimal;
+    padding-left: 12px;
+}
+/*li ol{border-style:none;}*/
+/*li ul{border-style:none;}*/
+/*ol ul, ul ol, ul ul, ol ol {margin-left:1em;}*/
 pre code{margin:1em 0;font-size:13px;line-height:1.6;display:block;overflow:auto;}
 blockquote{display:block;text-align:justify;border-left:4px solid #eeeeee;}
 blockquote{margin:1em 0em;padding-left:1.5em;}

@@ -1,8 +1,8 @@
 #markdown: rdiscount
-markdown: kramdown
+#markdown: kramdown
 markdown: redcarpet
-redcarpet:
-    extensions: [ "fenced_code_blocks", "no_intra_emphasis", "strikethrough", "highlight", "prettify", "tables", "autolink" ]
+#redcarpet:
+    #extensions: [ "fenced_code_blocks", "no_intra_emphasis", "strikethrough", "highlight", "prettify", "tables", "autolink", "hard_wap", "lax_spacing" ]
 permalink: /:title/
 url: http://winter233.github.io
 highlighter: pygments
