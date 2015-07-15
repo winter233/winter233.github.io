@@ -44,6 +44,7 @@ tags: [linux,vim,ubuntu]
             --enable-gui=gtk2 --enable-cscope --prefix=/usr
 	```
 	set Vim RUNTIMEDIR:
+
 	```sh
 	make VIMRUNTIMEDIR=/usr/share/vim/vim74
 	```

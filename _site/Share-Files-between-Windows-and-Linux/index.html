@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="author" content="liu_winter" />
+		<title>Share Files between Windows and Linux</title>
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link href="/feed/" rel="alternate" title="liu_winter" type="application/atom+xml" />
+		<link rel="stylesheet" href="/media/css/style.css" />
+		<link rel="stylesheet" href="/media/css/highlight.css" />
+		<script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="main" role="main">
+				<header>
+				<h1>Share Files between Windows and Linux</h1>
+				</header>
+				<nav>
+				<span><a title="网站首页" class="" href="/">首页</a></span>
+				<span><a title="文章分类" class="" href="/categories/">分类</a></span>
+				<span><a title="标签索引" class="" href="/tags/">标签</a></span>
+				<!--<span><a title="友情链接" class="" href="/links/">链接</a></span>-->
+				<span><a title="留言交流" class="" href="/guestbook/">留言</a></span>
+                                <span><a title="订阅本站" class="" href="/feed.xml">订阅</a></span>
+				<span><a title="关于站长" class="" href="/about/">关于</a></span>
+				</nav>
+				<article class="content">
+				<section class="meta">
+<span class="time">
+  <time datetime="2015-07-15">2015-07-15</time>
+</span>
+
+ | 
+<span class="categories">
+  分类
+  
+  <a href="/categories/#linux" title="linux">linux</a>&nbsp;
+  
+</span>
+
+
+ | 
+<span class="tags">
+  标签
+  
+  <a href="/tags/#linux" title="linux">linux</a>&nbsp;
+  
+  <a href="/tags/#windows" title="windows">windows</a>&nbsp;
+  
+  <a href="/tags/#share" title="share">share</a>&nbsp;
+  
+</span>
+
+</section>
+<section class="post">
+<h2>Windows as host(Using CIFS)</h2>
+
+<h3>Operations on Windows</h3>
+
+<p>Slect the folder you would like to share, then right-click, follow options as follow: select <code>property</code>, change to <code>share</code> tab, click <code>share</code>, then select user and authory. Finishing share by click <code>share</code> button.</p>
+
+<h3>Operations on Linux</h3>
+
+<ol>
+<li><p>Install CIFS</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install cifs-utils
+</code></pre></div></li>
+<li><p>Mounting shared folders</p>
+
+<ol>
+<li><p>Create a mount point whereever you like, for example:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo mkdir /media/windows_share
+</code></pre></div></li>
+<li><p>Add to configure file
+edit file <code>/etc/fstab</code>, add a new line: </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">//windows_ip/share_folder /media/windows_shre cifs username=windows_user,password=windows_passwd,iocharset=utf-8,sec=ntl 0 0
+</code></pre></div>
+<p>If you would like to do something in the shared folder(eg: compile a c program), you may encounter a fatal error:</p>
+
+<blockquote>
+<p>Value too large for defined data type  </p>
+</blockquote>
+
+<p>You have to append <code>nounix</code>, <code>noserverino</code> to the fourth.</p></li>
+</ol></li>
+</ol>
+
+<h2>Linux as host(Using ftp or samba)</h2>
+
+<h3>Sharing via ftp</h3>
+
+<ol>
+<li><p>Install vsftpd</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install vsftpd
+</code></pre></div></li>
+<li><p>Configuring vsftpd
+Edit file <code>/etc/vsftd.conf</code>, simply uncomment these lines to acquire read/write acess.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">annoymous_enable=NO
+local_enable=YES
+write_enable=YES
+</code></pre></div>
+<p>More options can be found in the file.</p></li>
+<li><p>Start service</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo service vsftpd start
+sudo chkconfig vsftpd on
+</code></pre></div>
+<p>First command start vsftpd service, and the second enable service on startup.</p></li>
+<li><p>On windows, you can access your linux <code>HOME</code> folder via a ftp client or a browser.</p></li>
+</ol>
+
+<h3>Sharing via samba</h3>
+
+<ol>
+<li><p>Install samba</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install samba samba-common
+</code></pre></div></li>
+<li><p>add a samba user</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo smbpasswd -a username
+</code></pre></div></li>
+<li><p>Edit file <code>/etc/samba/smb.conf</code>, simply uncomment these lines:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">[homes]
+    comment = Home Directores
+    browseable = yes
+    writeable = yes
+</code></pre></div></li>
+<li><p>Start service</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo service smbd start
+sudo chkconfig smbd on
+</code></pre></div></li>
+<li><p>Check samba user with <code>pdbedit -Lv</code>.</p></li>
+<li><p>Right-click <code>computer</code>, select <code>Map Network Drive</code>, type server info <code>\\server\shared_folder</code> in the <code>Folder</code> box, then type your smb user credential.</p></li>
+</ol>
+
+<h2>Which is better</h2>
+
+<p>Generally, ftp is faster than samba/CIFS<a href="http://arstechnica.com/civis/viewtopic.php?t=221436">1</a>. However, samba and CIFS is more convenient. If you just have to transfer a very big file, ftp is better. If you have a limited storage or you are working on a ARM board, CIFS is the best choice.</p>
+
+<p>Ref: <a href="https://wiki.ubuntu.com/MountWindowsSharesPermanently">Mount Windows Shares Permanently</a></p>
+
+</section>
+<section align="right">
+<br/>
+<span>
+	<a  href="/Using-Vim-with-Neocomplete/" class="pageNav"  >上一篇</a>
+	&nbsp;&nbsp;&nbsp;
+	<a   class="pageNavInvalid"  >下一篇</a>
+</span>
+</section>
+
+	
+	<div class="ds-thread" />
+		
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"winter233"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+				</article>
+			</div>
+
+			<footer>
+			<p><small>
+				<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/cn/" target="_blank" title="许可协议">©</a> 2004 - 2015 <a href="/about/">liu_winter</a>
+			</small></p>
+			</footer>
+
+		</div>
+	</body>
+</html>
