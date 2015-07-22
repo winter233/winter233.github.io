@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="author" content="liu_winter" />
+		<title>Vim处理文本实例以及比较文件</title>
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link href="/feed/" rel="alternate" title="liu_winter" type="application/atom+xml" />
+		<link rel="stylesheet" href="/media/css/style.css" />
+		<link rel="stylesheet" href="/media/css/highlight.css" />
+		<script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="main" role="main">
+				<header>
+				<h1>Vim处理文本实例以及比较文件</h1>
+				</header>
+				<nav>
+				<span><a title="网站首页" class="" href="/">首页</a></span>
+				<span><a title="文章分类" class="" href="/categories/">分类</a></span>
+				<span><a title="标签索引" class="" href="/tags/">标签</a></span>
+				<!--<span><a title="友情链接" class="" href="/links/">链接</a></span>-->
+				<span><a title="留言交流" class="" href="/guestbook/">留言</a></span>
+                                <span><a title="订阅本站" class="" href="/feed.xml">订阅</a></span>
+				<span><a title="关于站长" class="" href="/about/">关于</a></span>
+				</nav>
+				<article class="content">
+				<section class="meta">
+<span class="time">
+  <time datetime="2015-07-22">2015-07-22</time>
+</span>
+
+ | 
+<span class="categories">
+  分类
+  
+  <a href="/categories/#vim" title="vim">vim</a>&nbsp;
+  
+</span>
+
+
+ | 
+<span class="tags">
+  标签
+  
+  <a href="/tags/#vim" title="vim">vim</a>&nbsp;
+  
+</span>
+
+</section>
+<section class="post">
+<p>标签（空格分隔）： vim</p>
+
+<hr>
+
+<p>这两天一直在验证自己写的反汇编器的正确性。今天下午突然想直接把自己的反汇编结果和objdump的结果diff一下，这样就比较直观了。待处理的文件为opencv 2.3.1的imgproc动态库文件。</p>
+
+<p>处理前：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim">   <span class="m">21</span>b<span class="m">44</span>:   e59d2018    ldr r2<span class="p">,</span> [<span class="k">sp</span><span class="p">,</span> #<span class="m">24</span>]
+   <span class="m">21</span>b<span class="m">48</span>:   e59d3008    ldr r3<span class="p">,</span> [<span class="k">sp</span><span class="p">,</span> #<span class="m">8</span>]
+   <span class="m">21</span>b<span class="m">4</span>c:   e3a00001    mov r0<span class="p">,</span> #<span class="m">1</span>
+   <span class="m">21</span>b<span class="m">50</span>:   e5832000    str r2<span class="p">,</span> [r3]
+   <span class="m">21</span>b<span class="m">54</span>:   eaffffd3    <span class="k">b</span>   <span class="m">21</span>aa<span class="m">8</span> <span class="p">&lt;</span>_ZL15icvSklansky_32fPP12CvPoint2D32fiiPiii<span class="p">+</span><span class="m">0</span>x<span class="m">21</span>c<span class="p">&gt;</span>
+
+<span class="m">00021</span>b<span class="m">58</span> <span class="p">&lt;</span>_ZL24icvCalcAndWritePtIndicesPP7CvPointPiiiP5CvSeqP11CvSeqWriter.clone.<span class="m">9</span><span class="p">&gt;</span>:
+   <span class="m">21</span>b<span class="m">58</span>:   e92d4ff0    push    {r4<span class="p">,</span> r5<span class="p">,</span> r6<span class="p">,</span> r7<span class="p">,</span> r8<span class="p">,</span> r9<span class="p">,</span> <span class="k">sl</span><span class="p">,</span> <span class="nb">fp</span><span class="p">,</span> <span class="k">lr</span>}
+   <span class="m">21</span>b<span class="m">5</span>c:   e59fc2ec    ldr ip<span class="p">,</span> [<span class="k">pc</span><span class="p">,</span> #<span class="m">748</span>]  ; <span class="m">21</span>e<span class="m">50</span> <span class="p">&lt;</span>_ZL24icvCalcAndWritePtIndicesPP7CvPointPiiiP5CvSeqP11CvSeqWriter.clone.<span class="m">9</span><span class="p">+</span><span class="m">0</span>x<span class="m">2</span>f<span class="m">8</span><span class="p">&gt;</span>
+   <span class="m">21</span>b<span class="m">60</span>:   e24dd07c    <span class="k">sub</span> <span class="k">sp</span><span class="p">,</span> <span class="k">sp</span><span class="p">,</span> #<span class="m">124</span>    ; <span class="m">0</span>x<span class="m">7</span>c
+</code></pre></div>
+<p>用的比较多的是vim的全局命令<code>:global</code>，以及替换命令<code>:substitute</code>。获取库文件的反汇编：</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">objdump -D /usr/local/lib/libopencv_imgproc.so.2.3.1 &gt; ~/imgproc.txt
+</code></pre></div>
+<p>由于反汇编了整个文件，需要删除<code>.text</code>节区以外的部分：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim">/.text
+dgg
+/.<span class="k">fini</span>
+dG
+</code></pre></div>
+<p>删除<code>.text</code>节区的前三个函数（反汇编器不处理这三个函数），方法也是<code>dgg</code>。删除所有函数头所在行（以“:”结尾）：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim"><span class="p">:</span><span class="k">g</span><span class="sr">/:$/</span><span class="k">d</span>
+</code></pre></div>
+<p>再将每一行中的指令地址和编码删去，只留下翻译后的指令：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim">gg0<span class="p">&lt;</span>C<span class="p">-</span><span class="k">v</span><span class="p">&gt;</span>Gwwwx
+</code></pre></div>
+<p>然后再删除<code>b</code>指令后面“&lt;&gt;”之间的内容。最初我的设想是：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim"><span class="p">:</span><span class="k">g</span><span class="sr">/&lt;/</span>D
+</code></pre></div>
+<p>这里并不识别<code>D</code>，因此有了下面的方法，下找到&quot;&lt;.*&gt;&quot;，再将其整体替换为空格。命令中的<code>+</code>相当于<code>/</code>为分隔符。<code>:global</code>命令的一般形式为：<code>:[range]global/{pattern}/{command}</code>。<code>:substitute</code>命令一般形式为：<code>:[range]substitute/from/to/[flags]</code></p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim"><span class="p">:</span><span class="k">g</span><span class="p">+&lt;</span>.*<span class="p">+</span><span class="k">s</span><span class="sr">/&lt;.*/</span>/<span class="k">g</span>
+<span class="p">:</span><span class="k">g</span><span class="p">+</span>;.*<span class="p">+</span><span class="k">s</span><span class="sr">/;.*/</span>/<span class="k">g</span>
+</code></pre></div>
+<p>第二句用于删除行末注释（以&quot;;&quot;开始）。</p>
+
+<p>删除所有空白行：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim"><span class="p">:</span><span class="k">g</span><span class="sr">/^$/</span><span class="k">d</span>
+</code></pre></div>
+<p>删除所有行末空格：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim">：%<span class="k">s</span>\<span class="k">s</span>\<span class="p">+</span>$<span class="sr">//</span><span class="k">g</span>
+</code></pre></div>
+<p>处理完毕，效果如图：</p>
+<div class="highlight"><pre><code class="language-asm" data-lang="asm"><span class="nf">ldr</span> <span class="no">r2</span><span class="p">,</span> <span class="err">[</span><span class="no">sp</span><span class="p">,</span> <span class="c">#24]</span>
+<span class="nf">ldr</span> <span class="no">r3</span><span class="p">,</span> <span class="err">[</span><span class="no">sp</span><span class="p">,</span> <span class="c">#8]</span>
+<span class="nf">mov</span> <span class="no">r0</span><span class="p">,</span> <span class="c">#1</span>
+<span class="nf">str</span> <span class="no">r2</span><span class="p">,</span> <span class="err">[</span><span class="no">r3</span><span class="err">]</span>
+<span class="nf">b</span>   <span class="mi">21</span><span class="no">aa8</span>
+<span class="nf">push</span>    <span class="err">{</span><span class="no">r4</span><span class="p">,</span> <span class="no">r5</span><span class="p">,</span> <span class="no">r6</span><span class="p">,</span> <span class="no">r7</span><span class="p">,</span> <span class="no">r8</span><span class="p">,</span> <span class="no">r9</span><span class="p">,</span> <span class="no">sl</span><span class="p">,</span> <span class="no">fp</span><span class="p">,</span> <span class="no">lr</span><span class="err">}</span>
+<span class="nf">ldr</span> <span class="no">ip</span><span class="p">,</span> <span class="err">[</span><span class="no">pc</span><span class="p">,</span> <span class="c">#748]</span>
+<span class="nf">sub</span> <span class="no">sp</span><span class="p">,</span> <span class="no">sp</span><span class="p">,</span> <span class="c">#124</span>
+</code></pre></div>
+<h2>使用vim diff比较文件</h2>
+
+<ol>
+<li><p>在terminal下直接输入命令：</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vimdiff a.txt b.txt
+</code></pre></div></li>
+<li><p>已经打开a.txt：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim"><span class="p">:</span><span class="k">vertical</span> <span class="k">diffsplit</span> <span class="k">b</span>.txt
+</code></pre></div></li>
+<li><p>a.txt和b.txt都已打开，且处于垂直分屏状态：</p>
+<div class="highlight"><pre><code class="language-vim" data-lang="vim"><span class="p">:</span><span class="k">windo</span> <span class="k">diffthis</span>
+</code></pre></div></li>
+</ol>
+
+</section>
+<section align="right">
+<br/>
+<span>
+	<a  href="/Share-Files-between-Windows-and-Linux/" class="pageNav"  >上一篇</a>
+	&nbsp;&nbsp;&nbsp;
+	<a   class="pageNavInvalid"  >下一篇</a>
+</span>
+</section>
+
+	
+	<div class="ds-thread" />
+		
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"winter233"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+				</article>
+			</div>
+
+			<footer>
+			<p><small>
+				<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/cn/" target="_blank" title="许可协议">©</a> 2004 - 2015 <a href="/about/">liu_winter</a>
+			</small></p>
+			</footer>
+
+		</div>
+	</body>
+</html>

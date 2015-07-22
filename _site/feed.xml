@@ -7,6 +7,85 @@
                 <atom:link href="http://winter233.github.io/feed.xml" rel="self" type="application/rss+xml" />
                 
                         <item>
+                           <title>Vim处理文本实例以及比较文件</title>
+                           <description>&lt;p&gt;标签（空格分隔）： vim&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;这两天一直在验证自己写的反汇编器的正确性。今天下午突然想直接把自己的反汇编结果和objdump的结果diff一下，这样就比较直观了。待处理的文件为opencv 2.3.1的imgproc动态库文件。&lt;/p&gt;
+
+&lt;p&gt;处理前：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;44&lt;/span&gt;:   e59d2018    ldr r2&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; [&lt;span class=&quot;k&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; #&lt;span class=&quot;m&quot;&gt;24&lt;/span&gt;]
+   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;48&lt;/span&gt;:   e59d3008    ldr r3&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; [&lt;span class=&quot;k&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; #&lt;span class=&quot;m&quot;&gt;8&lt;/span&gt;]
+   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;c:   e3a00001    mov r0&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; #&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
+   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;50&lt;/span&gt;:   e5832000    str r2&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; [r3]
+   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;54&lt;/span&gt;:   eaffffd3    &lt;span class=&quot;k&quot;&gt;b&lt;/span&gt;   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;aa&lt;span class=&quot;m&quot;&gt;8&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;_ZL15icvSklansky_32fPP12CvPoint2D32fiiPiii&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;x&lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;c&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;m&quot;&gt;00021&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;58&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;_ZL24icvCalcAndWritePtIndicesPP7CvPointPiiiP5CvSeqP11CvSeqWriter.clone.&lt;span class=&quot;m&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;:
+   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;58&lt;/span&gt;:   e92d4ff0    push    {r4&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; r5&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; r6&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; r7&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; r8&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; r9&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;fp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;lr&lt;/span&gt;}
+   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;c:   e59fc2ec    ldr ip&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; [&lt;span class=&quot;k&quot;&gt;pc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; #&lt;span class=&quot;m&quot;&gt;748&lt;/span&gt;]  ; &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;e&lt;span class=&quot;m&quot;&gt;50&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;_ZL24icvCalcAndWritePtIndicesPP7CvPointPiiiP5CvSeqP11CvSeqWriter.clone.&lt;span class=&quot;m&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;x&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;f&lt;span class=&quot;m&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+   &lt;span class=&quot;m&quot;&gt;21&lt;/span&gt;b&lt;span class=&quot;m&quot;&gt;60&lt;/span&gt;:   e24dd07c    &lt;span class=&quot;k&quot;&gt;sub&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; #&lt;span class=&quot;m&quot;&gt;124&lt;/span&gt;    ; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;x&lt;span class=&quot;m&quot;&gt;7&lt;/span&gt;c
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;用的比较多的是vim的全局命令&lt;code&gt;:global&lt;/code&gt;，以及替换命令&lt;code&gt;:substitute&lt;/code&gt;。获取库文件的反汇编：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;objdump -D /usr/local/lib/libopencv_imgproc.so.2.3.1 &amp;gt; ~/imgproc.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;由于反汇编了整个文件，需要删除&lt;code&gt;.text&lt;/code&gt;节区以外的部分：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;/.text
+dgg
+/.&lt;span class=&quot;k&quot;&gt;fini&lt;/span&gt;
+dG
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;删除&lt;code&gt;.text&lt;/code&gt;节区的前三个函数（反汇编器不处理这三个函数），方法也是&lt;code&gt;dgg&lt;/code&gt;。删除所有函数头所在行（以“:”结尾）：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/:$/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;d&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;再将每一行中的指令地址和编码删去，只留下翻译后的指令：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;gg0&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;C&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;Gwwwx
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后再删除&lt;code&gt;b&lt;/code&gt;指令后面“&amp;lt;&amp;gt;”之间的内容。最初我的设想是：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/&amp;lt;/&lt;/span&gt;D
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这里并不识别&lt;code&gt;D&lt;/code&gt;，因此有了下面的方法，下找到&amp;quot;&amp;lt;.*&amp;gt;&amp;quot;，再将其整体替换为空格。命令中的&lt;code&gt;+&lt;/code&gt;相当于&lt;code&gt;/&lt;/code&gt;为分隔符。&lt;code&gt;:global&lt;/code&gt;命令的一般形式为：&lt;code&gt;:[range]global/{pattern}/{command}&lt;/code&gt;。&lt;code&gt;:substitute&lt;/code&gt;命令一般形式为：&lt;code&gt;:[range]substitute/from/to/[flags]&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&amp;lt;&lt;/span&gt;.*&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/&amp;lt;.*/&lt;/span&gt;/&lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;;.*&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/;.*/&lt;/span&gt;/&lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;第二句用于删除行末注释（以&amp;quot;;&amp;quot;开始）。&lt;/p&gt;
+
+&lt;p&gt;删除所有空白行：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/^$/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;d&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;删除所有行末空格：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;：%&lt;span class=&quot;k&quot;&gt;s&lt;/span&gt;\&lt;span class=&quot;k&quot;&gt;s&lt;/span&gt;\&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;$&lt;span class=&quot;sr&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;处理完毕，效果如图：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-asm&quot; data-lang=&quot;asm&quot;&gt;&lt;span class=&quot;nf&quot;&gt;ldr&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#24]&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;ldr&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#8]&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#1&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;str&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;r3&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;b&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;21&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;aa8&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;push&lt;/span&gt;    &lt;span class=&quot;err&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;r4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;r9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;sl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;fp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;lr&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;ldr&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;pc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#748]&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;sub&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#124&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;使用vim diff比较文件&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;在terminal下直接输入命令：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;vimdiff a.txt b.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;已经打开a.txt：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;vertical&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;diffsplit&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;b&lt;/span&gt;.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;a.txt和b.txt都已打开，且处于垂直分屏状态：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-vim&quot; data-lang=&quot;vim&quot;&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;windo&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;diffthis&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+                           <pubDate>Wed, 22 Jul 2015 00:00:00 +0800</pubDate>
+                           <link>http://winter233.github.io/Vim-Batch-Processing-and-Diff/</link>
+                           <guid isPermaLink="true">http://winter233.github.io/Vim-Batch-Processing-and-Diff/</guid>
+                           </item>
+                
+                        <item>
                            <title>Share Files between Windows and Linux</title>
                            <description>&lt;h2&gt;Windows as host(Using CIFS)&lt;/h2&gt;
 
