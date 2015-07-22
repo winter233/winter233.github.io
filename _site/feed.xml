@@ -90,7 +90,9 @@ sudo chkconfig smbd on
 
 &lt;p&gt;Generally, ftp is faster than samba/CIFS&lt;a href=&quot;http://arstechnica.com/civis/viewtopic.php?t=221436&quot;&gt;1&lt;/a&gt;. However, samba and CIFS is more convenient. If you just have to transfer a very big file, ftp is better. If you have a limited storage or you are working on a ARM board, CIFS is the best choice.&lt;/p&gt;
 
-&lt;p&gt;Ref: &lt;a href=&quot;https://wiki.ubuntu.com/MountWindowsSharesPermanently&quot;&gt;Mount Windows Shares Permanently&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Ref:&lt;br&gt;
+1. &lt;a href=&quot;https://wiki.ubuntu.com/MountWindowsSharesPermanently&quot;&gt;Mount Windows Shares Permanently&lt;/a&gt;&lt;br&gt;
+2. &lt;a href=&quot;https://www.samba.org/samba/docs/man/manpages-3/mount.cifs.8.html&quot;&gt;mount.cifs&lt;/a&gt;&lt;/p&gt;
 </description>
                            <pubDate>Wed, 15 Jul 2015 00:00:00 +0800</pubDate>
                            <link>http://winter233.github.io/Share-Files-between-Windows-and-Linux/</link>
@@ -154,6 +156,49 @@ sudo update-alternatives --set vi /usr/bin/vim
                            <pubDate>Fri, 10 Jul 2015 00:00:00 +0800</pubDate>
                            <link>http://winter233.github.io/Using-Vim-with-Neocomplete/</link>
                            <guid isPermaLink="true">http://winter233.github.io/Using-Vim-with-Neocomplete/</guid>
+                           </item>
+                
+                        <item>
+                           <title>View Members of a Chain While Debugging with GDB</title>
+                           <description>&lt;p&gt;To print a element of the whole chain, &lt;code&gt;user-defined commands&lt;/code&gt; can help.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;A user-defined command is a sequence of gdb commands to which you assign a new name as a command.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;An example:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;define dump_node
+    &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Type*&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg0&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_node&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;printf&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;value is %d\n&amp;quot;&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;$_node&lt;/span&gt;-&amp;gt;value
+        &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_node&lt;/span&gt;-&amp;gt;next
+    end
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;User-defined command&lt;/em&gt; start with &lt;code&gt;define command-name&lt;/code&gt;, the example above defines a command named dump_list. &lt;code&gt;$arg0&lt;/code&gt; stands for the first argument of the command, more arguments can be accepted, and the limitation is 10 (&lt;code&gt;$arg9&lt;/code&gt;). &lt;/p&gt;
+
+&lt;p&gt;Save these user-defined command in a file, say &lt;code&gt;gdb.sh&lt;/code&gt;. To make it come into effect, using &lt;code&gt;source&lt;/code&gt; command in gdb shell:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;source gdb.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;use command:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;dump_node node
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can also create a correspongding &lt;code&gt;help&lt;/code&gt; info using &lt;code&gt;document&lt;/code&gt;.  See the example below:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;document dump_node
+    usage: dump_node _node
+    dump_node is used to dump all elements in _node chain.
+    arg0 is the head of the chain.
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Document of a command is optional. Check these info in gdb shell:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;help dump_node
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Ref:&lt;br&gt;
+&lt;a href=&quot;http://sourceware.org/gdb/current/onlinedocs/gdb/Define.html&quot;&gt;User-defined Command&lt;/a&gt;&lt;/p&gt;
+</description>
+                           <pubDate>Tue, 14 Apr 2015 00:00:00 +0800</pubDate>
+                           <link>http://winter233.github.io/View-Members-of-a-Chain-While-Debugging-with-GDB/</link>
+                           <guid isPermaLink="true">http://winter233.github.io/View-Members-of-a-Chain-While-Debugging-with-GDB/</guid>
                            </item>
                 
         </channel>

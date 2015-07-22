@@ -87,4 +87,6 @@ Slect the folder you would like to share, then right-click, follow options as fo
 ##Which is better
 Generally, ftp is faster than samba/CIFS[1](http://arstechnica.com/civis/viewtopic.php?t=221436). However, samba and CIFS is more convenient. If you just have to transfer a very big file, ftp is better. If you have a limited storage or you are working on a ARM board, CIFS is the best choice.
 
-Ref: [Mount Windows Shares Permanently](https://wiki.ubuntu.com/MountWindowsSharesPermanently)
+Ref:   
+1. [Mount Windows Shares Permanently](https://wiki.ubuntu.com/MountWindowsSharesPermanently)  
+2. [mount.cifs](https://www.samba.org/samba/docs/man/manpages-3/mount.cifs.8.html)

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="author" content="liu_winter" />
+		<title>View Members of a Chain While Debugging with GDB</title>
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link href="/feed/" rel="alternate" title="liu_winter" type="application/atom+xml" />
+		<link rel="stylesheet" href="/media/css/style.css" />
+		<link rel="stylesheet" href="/media/css/highlight.css" />
+		<script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="main" role="main">
+				<header>
+				<h1>View Members of a Chain While Debugging with GDB</h1>
+				</header>
+				<nav>
+				<span><a title="网站首页" class="" href="/">首页</a></span>
+				<span><a title="文章分类" class="" href="/categories/">分类</a></span>
+				<span><a title="标签索引" class="" href="/tags/">标签</a></span>
+				<!--<span><a title="友情链接" class="" href="/links/">链接</a></span>-->
+				<span><a title="留言交流" class="" href="/guestbook/">留言</a></span>
+                                <span><a title="订阅本站" class="" href="/feed.xml">订阅</a></span>
+				<span><a title="关于站长" class="" href="/about/">关于</a></span>
+				</nav>
+				<article class="content">
+				<section class="meta">
+<span class="time">
+  <time datetime="2015-04-14">2015-04-14</time>
+</span>
+
+ | 
+<span class="categories">
+  分类
+  
+  <a href="/categories/#gdb" title="gdb">gdb</a>&nbsp;
+  
+</span>
+
+
+ | 
+<span class="tags">
+  标签
+  
+  <a href="/tags/#linux" title="linux">linux</a>&nbsp;
+  
+  <a href="/tags/#gdb" title="gdb">gdb</a>&nbsp;
+  
+</span>
+
+</section>
+<section class="post">
+<p>To print a element of the whole chain, <code>user-defined commands</code> can help.</p>
+
+<blockquote>
+<p>A user-defined command is a sequence of gdb commands to which you assign a new name as a command.</p>
+</blockquote>
+
+<p>An example:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">define dump_node
+    <span class="nb">set</span> <span class="nv">$_node</span> <span class="o">=</span> <span class="o">(</span>Type*<span class="o">)</span><span class="nv">$arg0</span>
+    <span class="k">while</span> <span class="nv">$_node</span>
+        <span class="nb">printf</span> <span class="s2">&quot;value is %d\n&quot;</span>, <span class="nv">$_node</span>-&gt;value
+        <span class="nb">set</span> <span class="nv">$_node</span> <span class="o">=</span> <span class="nv">$_node</span>-&gt;next
+    end
+end
+</code></pre></div>
+<p><em>User-defined command</em> start with <code>define command-name</code>, the example above defines a command named dump_list. <code>$arg0</code> stands for the first argument of the command, more arguments can be accepted, and the limitation is 10 (<code>$arg9</code>). </p>
+
+<p>Save these user-defined command in a file, say <code>gdb.sh</code>. To make it come into effect, using <code>source</code> command in gdb shell:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">source gdb.sh
+</code></pre></div>
+<p>use command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">dump_node node
+</code></pre></div>
+<p>You can also create a correspongding <code>help</code> info using <code>document</code>.  See the example below:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">document dump_node
+    usage: dump_node _node
+    dump_node is used to dump all elements in _node chain.
+    arg0 is the head of the chain.
+end
+</code></pre></div>
+<p>Document of a command is optional. Check these info in gdb shell:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">help dump_node
+</code></pre></div>
+<p>Ref:<br>
+<a href="http://sourceware.org/gdb/current/onlinedocs/gdb/Define.html">User-defined Command</a></p>
+
+</section>
+<section align="right">
+<br/>
+<span>
+	<a   class="pageNavInvalid"  >上一篇</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="/Using-Vim-with-Neocomplete/" class="pageNav"  >下一篇</a>
+</span>
+</section>
+
+	
+	<div class="ds-thread" />
+		
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"winter233"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+				</article>
+			</div>
+
+			<footer>
+			<p><small>
+				<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/cn/" target="_blank" title="许可协议">©</a> 2004 - 2015 <a href="/about/">liu_winter</a>
+			</small></p>
+			</footer>
+
+		</div>
+	</body>
+</html>
