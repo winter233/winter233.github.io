@@ -72,6 +72,7 @@ let g:neocomplete#auto_completion_start_length = 3  "do completion after input 3
 ```
 
 More info can be found by `:help neocomplete`.   
+Here is my [vimrc](https://github.com/winter233/tools-conf/blob/master/.vimrc) file.
 
 Ref: [Building Vim from source](https://github.com/Valloric/YouCompleteMe/wiki/Building-Vim-from-source)
 

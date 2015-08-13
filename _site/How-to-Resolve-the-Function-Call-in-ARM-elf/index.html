@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="author" content="liu_winter" />
+		<title>How to resolve the function call in arm disassembly</title>
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link href="/feed/" rel="alternate" title="liu_winter" type="application/atom+xml" />
+		<link rel="stylesheet" href="/media/css/style.css" />
+		<link rel="stylesheet" href="/media/css/highlight.css" />
+		<script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="main" role="main">
+				<header>
+				<h1>How to resolve the function call in arm disassembly</h1>
+				</header>
+				<nav>
+				<span><a title="网站首页" class="" href="/">首页</a></span>
+				<span><a title="文章分类" class="" href="/categories/">分类</a></span>
+				<span><a title="标签索引" class="" href="/tags/">标签</a></span>
+				<!--<span><a title="友情链接" class="" href="/links/">链接</a></span>-->
+				<span><a title="留言交流" class="" href="/guestbook/">留言</a></span>
+                                <span><a title="订阅本站" class="" href="/feed.xml">订阅</a></span>
+				<span><a title="关于站长" class="" href="/about/">关于</a></span>
+				</nav>
+				<article class="content">
+				<section class="meta">
+<span class="time">
+  <time datetime="2015-08-12">2015-08-12</time>
+</span>
+
+ | 
+<span class="categories">
+  分类
+  
+  <a href="/categories/#disassembly" title="disassembly">disassembly</a>&nbsp;
+  
+</span>
+
+
+</section>
+<section class="post">
+<p>In ARM ELF, function or procedure are performed via <code>bl</code> and <code>blx</code>, the <a href="http://infocenter.arm.com/help/topic/com.arm.doc.ihi0042e/IHI0042E_aapcs.pdf">aapcs</a> writes:</p>
+
+<blockquote>
+<p>Both the ARM and Thumb instruction sets contain a primitive subroutine call instruction, BL, which performs a branch-with-link operation. The effect of executing BL is to transfer the sequentially next value of the program counter, the return address, into the link register (LR) and the destination address into the program counter (PC). Bit 0 of the link register will be set to 1 if the BL instruction was executed from Thumb state, and to 0 if executed from ARM state. The result is to transfer control to the destination address, passing the return address in LR as an additional parameter to the called subroutine.</p>
+</blockquote>
+
+<p>In disassembling, the address of <code>bl</code>/<code>blx</code> should be resolved to correspondent symbol. Some of the symbols could be found in <code>dynsym</code> (also in <code>symtab</code>), but others couldn&#39;t.</p>
+
+<p>Here is an example. I disassemble libopencv_imgproc.so, which is a part of <code>openCV</code> lib. </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">00176dac &lt;cvResize&gt;:
+  176dac:   e92d40f0    push    {r4, r5, r6, r7, lr}
+  176db0:   e1a03000    mov r3, r0
+  176db4:   e24dd0fc    sub sp, sp, #252    ; 0xfc
+  ...
+  176dd4:   e59f4358    ldr r4, [pc, #856]  ; 177134 &lt;cvResize+0x388&gt;
+  176dd8:   e58d5000    str r5, [sp]
+  176ddc:   ebfaa33a    bl  1facc &lt;_init+0x2cc&gt;
+  ...
+</code></pre></div>
+<p>First, locate the target address of <code>blx</code>--<code>1facc</code></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">   1facc:   e28fc601    add ip, pc, #1048576    ; 0x100000
+   1fad0:   e28cca7c    add ip, ip, #507904 ; 0x7c000
+   1fad4:   e5bcf61c    ldr pc, [ip, #1564]!    ; 0x61c
+</code></pre></div>
+<p>calculate the result of <code>pc</code>: <code>0x1fad4 + 0x100000 + 0x7c000 + 0x61c = 0x19c0f0</code>. <code>0x19c0f0</code> is a relocation address, which can be found in the <code>.rel.plt</code> table (To get the relocation symbol of a file, using <code>objdump -r</code> or <code>readelf -R</code>).</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"> Offset     Info    Type            Sym.Value  Sym. Name
+0019c0f0  00001316 R_ARM_JUMP_SLOT   00000000   _ZN2cv10cvarrToMatEPKv
+</code></pre></div>
+<p>Why relocation? </p>
+
+<blockquote>
+<p>Relocation information is used by linkers in order to bind symbols and addresses that could not be determined when the initial object was generated.</p>
+</blockquote>
+
+<p>the type of <code>rel.plt</code> section is <code>REL</code>, which is defined as</p>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Elf32_Addr</span> <span class="n">r_offset</span><span class="p">;</span>
+    <span class="n">Elf32_Word</span> <span class="n">r_info</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">Elf32_Rel</span><span class="p">;</span>
+</code></pre></div>
+<p>We can only acquire two item of a relocation symbol directly, but there are 5 five items in the table. the other three can be calculated from the <code>r_info</code> variable.</p>
+
+<p><code>r_offset</code> is the relocation address. For an executable file or a shared object, the value is the virtual address of the storage unit affected by the relocation.</p>
+
+<p><code>r_info</code> gives both the symbol table index with respect to which the relocation must be made, and the type of relocation to apply. </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">#define ELF32_R_SYM(i) ((i)&gt;&gt;8)
+#define ELF32_R_TYPE(i) ((unsigned char)(i))
+#define ELF32_R_INFO(s,t) (((s)&lt;&lt;8)+(unsigned char)(t))
+</code></pre></div>
+<p>As described above, the name of the symbol is the 19th <code>(0x1319&gt;&gt;8)</code> entry of the <code>dynsym</code>,</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Symbol table &#39;.dynsym&#39; contains 1656 entries:
+   Num:    Value  Size Type    Bind   Vis      Ndx Name
+    19: 00000000     0 FUNC    GLOBAL DEFAULT  UND _ZN2cv10cvarrToMatEPKvbbi
+</code></pre></div>
+<p>type is <code>(unsigned char)0x1316=0x16</code> <code>R_ARM_JUMP_SLOT</code>, which can be found in the <a href="http://infocenter.arm.com/help/topic/com.arm.doc.ihi0044e/IHI0044E_aaelf.pdf">aaelf</a>. Relocation types are processor-specific.</p>
+
+<p>When dealing with a relocation symbol, first calculate the relocation address via <code>plt</code> section, then find the correspondant item in <code>rel.plt</code>, finally get the index in <code>dynsym</code>.</p>
+
+<p>There are not only functions need to be relocated, some global variables also need relocate. The relocation of global variables can be found in <code>rel.dyn</code>, which would be discribed in a later post.</p>
+
+<p>ref:<br>
+1. <a href="http://infocenter.arm.com/help/topic/com.arm.doc.ihi0044e/IHI0044E_aaelf.pdf">aaelf</a><br>
+2. <a href="http://reverseengineering.stackexchange.com/questions/9033/how-to-recognize-the-function-call-in-a-dynamic-lib">my question on stakcoverflow</a></p>
+
+</section>
+<section align="right">
+<br/>
+<span>
+	<a  href="/Vim-Batch-Processing-and-Diff/" class="pageNav"  >上一篇</a>
+	&nbsp;&nbsp;&nbsp;
+	<a   class="pageNavInvalid"  >下一篇</a>
+</span>
+</section>
+
+	
+	<div class="ds-thread" />
+		
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"winter233"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+				</article>
+			</div>
+
+			<footer>
+			<p><small>
+				<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/cn/" target="_blank" title="许可协议">©</a> 2004 - 2015 <a href="/about/">liu_winter</a>
+			</small></p>
+			</footer>
+
+		</div>
+	</body>
+</html>

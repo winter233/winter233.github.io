@@ -7,6 +7,77 @@
                 <atom:link href="http://winter233.github.io/feed.xml" rel="self" type="application/rss+xml" />
                 
                         <item>
+                           <title>How to resolve the function call in arm disassembly</title>
+                           <description>&lt;p&gt;In ARM ELF, function or procedure are performed via &lt;code&gt;bl&lt;/code&gt; and &lt;code&gt;blx&lt;/code&gt;, the &lt;a href=&quot;http://infocenter.arm.com/help/topic/com.arm.doc.ihi0042e/IHI0042E_aapcs.pdf&quot;&gt;aapcs&lt;/a&gt; writes:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Both the ARM and Thumb instruction sets contain a primitive subroutine call instruction, BL, which performs a branch-with-link operation. The effect of executing BL is to transfer the sequentially next value of the program counter, the return address, into the link register (LR) and the destination address into the program counter (PC). Bit 0 of the link register will be set to 1 if the BL instruction was executed from Thumb state, and to 0 if executed from ARM state. The result is to transfer control to the destination address, passing the return address in LR as an additional parameter to the called subroutine.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In disassembling, the address of &lt;code&gt;bl&lt;/code&gt;/&lt;code&gt;blx&lt;/code&gt; should be resolved to correspondent symbol. Some of the symbols could be found in &lt;code&gt;dynsym&lt;/code&gt; (also in &lt;code&gt;symtab&lt;/code&gt;), but others couldn&amp;#39;t.&lt;/p&gt;
+
+&lt;p&gt;Here is an example. I disassemble libopencv_imgproc.so, which is a part of &lt;code&gt;openCV&lt;/code&gt; lib. &lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;00176dac &amp;lt;cvResize&amp;gt;:
+  176dac:   e92d40f0    push    {r4, r5, r6, r7, lr}
+  176db0:   e1a03000    mov r3, r0
+  176db4:   e24dd0fc    sub sp, sp, #252    ; 0xfc
+  ...
+  176dd4:   e59f4358    ldr r4, [pc, #856]  ; 177134 &amp;lt;cvResize+0x388&amp;gt;
+  176dd8:   e58d5000    str r5, [sp]
+  176ddc:   ebfaa33a    bl  1facc &amp;lt;_init+0x2cc&amp;gt;
+  ...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;First, locate the target address of &lt;code&gt;blx&lt;/code&gt;--&lt;code&gt;1facc&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;   1facc:   e28fc601    add ip, pc, #1048576    ; 0x100000
+   1fad0:   e28cca7c    add ip, ip, #507904 ; 0x7c000
+   1fad4:   e5bcf61c    ldr pc, [ip, #1564]!    ; 0x61c
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;calculate the result of &lt;code&gt;pc&lt;/code&gt;: &lt;code&gt;0x1fad4 + 0x100000 + 0x7c000 + 0x61c = 0x19c0f0&lt;/code&gt;. &lt;code&gt;0x19c0f0&lt;/code&gt; is a relocation address, which can be found in the &lt;code&gt;.rel.plt&lt;/code&gt; table (To get the relocation symbol of a file, using &lt;code&gt;objdump -r&lt;/code&gt; or &lt;code&gt;readelf -R&lt;/code&gt;).&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt; Offset     Info    Type            Sym.Value  Sym. Name
+0019c0f0  00001316 R_ARM_JUMP_SLOT   00000000   _ZN2cv10cvarrToMatEPKv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Why relocation? &lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Relocation information is used by linkers in order to bind symbols and addresses that could not be determined when the initial object was generated.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;the type of &lt;code&gt;rel.plt&lt;/code&gt; section is &lt;code&gt;REL&lt;/code&gt;, which is defined as&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Elf32_Addr&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_offset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Elf32_Word&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Elf32_Rel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We can only acquire two item of a relocation symbol directly, but there are 5 five items in the table. the other three can be calculated from the &lt;code&gt;r_info&lt;/code&gt; variable.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;r_offset&lt;/code&gt; is the relocation address. For an executable file or a shared object, the value is the virtual address of the storage unit affected by the relocation.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;r_info&lt;/code&gt; gives both the symbol table index with respect to which the relocation must be made, and the type of relocation to apply. &lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#define ELF32_R_SYM(i) ((i)&amp;gt;&amp;gt;8)
+#define ELF32_R_TYPE(i) ((unsigned char)(i))
+#define ELF32_R_INFO(s,t) (((s)&amp;lt;&amp;lt;8)+(unsigned char)(t))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;As described above, the name of the symbol is the 19th &lt;code&gt;(0x1319&amp;gt;&amp;gt;8)&lt;/code&gt; entry of the &lt;code&gt;dynsym&lt;/code&gt;,&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;Symbol table &amp;#39;.dynsym&amp;#39; contains 1656 entries:
+   Num:    Value  Size Type    Bind   Vis      Ndx Name
+    19: 00000000     0 FUNC    GLOBAL DEFAULT  UND _ZN2cv10cvarrToMatEPKvbbi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;type is &lt;code&gt;(unsigned char)0x1316=0x16&lt;/code&gt; &lt;code&gt;R_ARM_JUMP_SLOT&lt;/code&gt;, which can be found in the &lt;a href=&quot;http://infocenter.arm.com/help/topic/com.arm.doc.ihi0044e/IHI0044E_aaelf.pdf&quot;&gt;aaelf&lt;/a&gt;. Relocation types are processor-specific.&lt;/p&gt;
+
+&lt;p&gt;When dealing with a relocation symbol, first calculate the relocation address via &lt;code&gt;plt&lt;/code&gt; section, then find the correspondant item in &lt;code&gt;rel.plt&lt;/code&gt;, finally get the index in &lt;code&gt;dynsym&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;There are not only functions need to be relocated, some global variables also need relocate. The relocation of global variables can be found in &lt;code&gt;rel.dyn&lt;/code&gt;, which would be discribed in a later post.&lt;/p&gt;
+
+&lt;p&gt;ref:&lt;br&gt;
+1. &lt;a href=&quot;http://infocenter.arm.com/help/topic/com.arm.doc.ihi0044e/IHI0044E_aaelf.pdf&quot;&gt;aaelf&lt;/a&gt;&lt;br&gt;
+2. &lt;a href=&quot;http://reverseengineering.stackexchange.com/questions/9033/how-to-recognize-the-function-call-in-a-dynamic-lib&quot;&gt;my question on stakcoverflow&lt;/a&gt;&lt;/p&gt;
+</description>
+                           <pubDate>Wed, 12 Aug 2015 00:00:00 +0800</pubDate>
+                           <link>http://winter233.github.io/How-to-Resolve-the-Function-Call-in-ARM-elf/</link>
+                           <guid isPermaLink="true">http://winter233.github.io/How-to-Resolve-the-Function-Call-in-ARM-elf/</guid>
+                           </item>
+                
+                        <item>
                            <title>Vim处理文本实例以及比较文件</title>
                            <description>&lt;p&gt;标签（空格分隔）： vim&lt;/p&gt;
 
@@ -228,7 +299,8 @@ sudo update-alternatives --set vi /usr/bin/vim
 &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;:neocomplete#disable_auto_complete &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;         &lt;span class=&quot;c&quot;&gt;&amp;quot;auto completion&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;g&lt;/span&gt;:neocomplete#auto_completion_start_length &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;&amp;quot;do completion after input 3 keys&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;More info can be found by &lt;code&gt;:help neocomplete&lt;/code&gt;.   &lt;/p&gt;
+&lt;p&gt;More info can be found by &lt;code&gt;:help neocomplete&lt;/code&gt;.&lt;br&gt;
+Here is my &lt;a href=&quot;https://github.com/winter233/tools-conf/blob/master/.vimrc&quot;&gt;vimrc&lt;/a&gt; file.&lt;/p&gt;
 
 &lt;p&gt;Ref: &lt;a href=&quot;https://github.com/Valloric/YouCompleteMe/wiki/Building-Vim-from-source&quot;&gt;Building Vim from source&lt;/a&gt;&lt;/p&gt;
 </description>
