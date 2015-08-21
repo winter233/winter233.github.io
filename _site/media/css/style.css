@@ -9,14 +9,16 @@
 * |\.|._)._)
 * --------------------------------- */
 / *------------------------------------
-* fix list style by winter233(http://winter233.github.io)
+* fix list ol style by winter233(http://winter233.github.io)
 * 2015-07-14
+* fix list ul style by winter233(http://winter233.github.io)
+* 2015-08-21
 * ------------------------------------ */
 /*@import url(http://fonts.googleapis.com/css?family=Galdeano);
 @import url(http://fonts.googleapis.com/css?family=Electrolize);
 @import url(http://fonts.googleapis.com/css?family=Cuprum);
 */
-body{font-size:14px;word-spacing:1px;
+body{font-size:21px;word-spacing:1px;
         margin-left:auto;
 margin-right:auto;
         font-family:"Galdeano","Hiragino Sans GB","Microsoft YaHei",Trebuchet,"Trebuchet MS",Tahoma,"Lucida Grande","Lucida Sans Unicode",Verdana,sans-serif;color:#2C3E50;}
@@ -28,30 +30,40 @@ p{padding:.5em 0;margin:.5em 0;}
 li{padding: .2em 0; }
 ol{list-style-position:inside;border: rgb(226, 222, 222);border-style: solid;border-width:1px;border-radius: 10px;padding: .3em 0;}
 ul{list-style-position:inside;border: rgb(226, 222, 222);border-style: solid;border-width:1px;border-radius: 10px;padding: .3em 0;}
-/*ol, ul {*/
-  /*list-style-position: inside; }*/
+/*ol, ul {
+  list-style-position: inside; }*/
 ol, ul {
 	list-style: none;
 }
+
 ol {
     list-style-type: decimal;
     padding-left: 36px;
+    padding-right: 36px;
+}
+ul {
+    list-style-type: disc;
+    padding-left: 36px;
+    padding-right: 36px;
 }
 p, ul, ol, dl {
     line-height: 24px;
-    margin: 0 0 24px 0;
+    margin: 0 24px 24px 0;
 }
-li ol{border-style:none;}
-li ul{border-style:none;}
 ol ul, ul ol, ul ul, ol ol {margin-left:1em;}
-pre code{margin:1em 0;font-size:13px;line-height:1.6;display:block;overflow:auto;}
+pre code{margin:1em 0;font-size:15px;line-height:1.6;display:block;overflow:auto;}
+/*
 blockquote{display:block;text-align:justify;border-left:4px solid #eeeeee;}
+*/
+blockquote {border-left:2px solid #777; padding-left: 18px; font-style: italic; font-size:18px;font-weight:500;}
+/*
 blockquote{margin:1em 0em;padding-left:1.5em;}
 blockquote p{margin:0;padding:.5em 0;}
+*/
 table { border-collapse:collapse; border-radius:10px;}
 td, th { padding:5px 10px; border:1px solid #886; background:#efefef; }
 #container{width:850px;margin:2em auto;display:block;padding:0 2em;}
-.content{font-size:16px;line-height:24px;}
+.content{font-size:18px;line-height:24px;}
 .content h1{padding:.5em 0;}
 .content img{max-width:640px;display:block;margin:4px auto;-webkit-box-shadow:#999 1px 1px 4px;-moz-box-shadow:#999 1px 1px 4px;box-shadow:#999 1px 1px 4px;}
 #tag_cloud{margin-bottom: 1em;}
@@ -64,7 +76,7 @@ td, th { padding:5px 10px; border:1px solid #886; background:#efefef; }
 
 .listing-item time{color:#999999;}
 .listing-seperator{font-weight:bold;}
-.meta{font-size:12px;color:#888;}
+.meta{font-size:15px;color:#888;}
 .pageNav{font-weight:bold;font-size:17px;}
 .pageNavInvalid{font-weight:bold;font-size:17px;color:#D0D0D0;}
 header{padding:.5em 0;border-bottom: 1px solid #cccccc;}
@@ -72,16 +84,17 @@ nav{font-family:"Electrolize",sans-serif;font-size:1.1em;text-transform:uppercas
 nav a{display:block;padding:.7em 1em;color:#000000;}
 nav a:hover{background-color:#ff0000;text-decoration:none;color:#f9f9f9;-webkit-transition:color .2s linear;}
 .post{padding:.5em 0em;}
-.post ul{padding:.5em 0em;}
 .post .listing2{padding:.5em 0em;border-style:none;}
 h1{font-family:"Cuprum","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:1.6em;color:#000;}
 h2{font-family:"Cuprum","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:1.4em;color:#111;}
 h3{font-family:"Cuprum","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:1.2em;color:#222;padding: .5em 0em;margin:0em 0em}
 h4{font-family:"Cuprum","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:1em;color:#333;}
-pre,code{font-family:Menlo,"Andale Mono",Consolas,"Courier New",Monaco,monospace;font-size:13px;}
+pre,code{font-family:Menlo,"Andale Mono",Consolas,"Courier New",Monaco,monospace;font-size:16px;}
+/*
 code{background-color:rgba(208, 208, 208, 0.29);}
+*/
 embed,object,iframe{display:block;margin:4px auto;}
-.gist{font-size: 12px;line-height:1.6;}
+.gist{font-size: 14px;line-height:1.6;}
 
 footer{
 text-align:center;
@@ -90,7 +103,7 @@ border-top: 1px dashed #CCC;
 }
 
 footer small {
-font-size: 13px;
+font-size: 14px;
 color: #AAA;
 }
 
@@ -105,7 +118,7 @@ text-decoration: none;
 }
 
 .label {
-font-size:11.25px;
+font-size:14px;
 font-weight:700;
 color:#fff;
 text-transform:uppercase;
@@ -154,4 +167,32 @@ background: #ff0000;
 .paginator a:hover{
 color: white;
 background: #83BF73;
+}
+pre,
+code {
+  white-space: pre;
+  display: inline-block;
+  margin: 0;
+  font: 14px/1.8em Menlo, Consolas, "Courier New", Courier, "Liberation Mono", monospace;
+  padding: 0 0.5em;
+}
+
+@media (min-width: 768px) {
+  pre, code { font-size: 16px; border-radius:5px}
+}
+
+.highlight,
+p > pre,
+p > code,
+p > nobr > code,
+li > code,
+h5 > code,
+.note > code {
+  border-radius:10px;
+  background-color: #efefef;
+  color: #000;
+  @include border-radius(5px);
+  @include box-shadow(inset 0 1px 10px rgba(0,0,0,.3),
+    0 1px 0 rgba(255,255,255,.1),
+    0 -1px 0 rgba(0,0,0,.5));
 }
